@@ -6,7 +6,7 @@
 # ---- STOCK QUANSHENG FERATURES ----
 ENABLE_UART                   ?= 1
 ENABLE_AIRCOPY                ?= 1
-ENABLE_FMRADIO                ?= 1
+ENABLE_FMRADIO                ?= 0
 ENABLE_NOAA                   ?= 0
 ENABLE_VOICE                  ?= 0
 ENABLE_VOX                    ?= 0
@@ -34,7 +34,7 @@ ENABLE_FASTER_CHANNEL_SCAN    ?= 1
 ENABLE_RSSI_BAR               ?= 1
 ENABLE_AUDIO_BAR              ?= 1
 ENABLE_COPY_CHAN_TO_VFO       ?= 0
-ENABLE_SPECTRUM               ?= 1
+ENABLE_SPECTRUM               ?= 0
 ENABLE_REDUCE_LOW_MID_TX_POWER?= 0
 ENABLE_BYP_RAW_DEMODULATORS   ?= 0
 ENABLE_BLMIN_TMP_OFF          ?= 0
@@ -414,6 +414,12 @@ LDFLAGS += --specs=nosys.specs --specs=nano.specs
 #show size
 LDFLAGS += -Wl,--print-memory-usage
 
+# Allow passing extra linker flags from command line without overriding defaults.
+# Usage: make EXTRA_LDFLAGS='-Wl,-Map=/path/to/map' ...
+ifneq ($(strip $(EXTRA_LDFLAGS)),)
+LDFLAGS += $(EXTRA_LDFLAGS)
+endif
+
 LIBS =
 
 C_OBJECTS = $(addprefix $(BUILD)/, $(C_SRC:.c=.o) )
@@ -473,7 +479,6 @@ clean-all:
 	@-$(RM) $(call FixPath,$(BUILD))
 	@-$(DEL) $(call FixPath,$(BIN)/*)
 
--include $(OBJECTS:.o=.d)
 
 # Create objects from C SRC files
 $(BUILD)/%.o: %.c
