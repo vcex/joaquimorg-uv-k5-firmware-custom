@@ -16,6 +16,11 @@
 #include "app/messenger.h"
 #include "common.h"
 #include "ui/ui.h"
+#ifdef ENABLE_POCSAG_SEND
+#include "app/pocsag_encode.h"
+#endif
+#include "ui/inputbox.h"
+#include "ui/helper.h"
 
 #if defined(ENABLE_UART)
 	#include "driver/uart.h"
@@ -56,6 +61,8 @@ uint16_t gErrorsDuringMSG;
 uint8_t hasNewMessage = 0;
 
 uint8_t keyTickCounter = 0;
+// When set, messenger is awaiting pager address input via the global input box
+uint8_t gAwaitPocsagAddress = 0;
 
 // -----------------------------------------------------
 
@@ -305,6 +312,26 @@ void MSG_FSKSendData() {
 	BK4819_WriteRegister(BK4819_REG_51, css_val);
 
 }
+
+// New minimal wrapper to send POCSAG messages
+#ifdef ENABLE_POCSAG_SEND
+void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message) {
+	// Use local buffer and encode
+	uint8_t buf[1024];
+	int len = POCSAG_EncodeMessage(pagerAddress, message, buf, sizeof(buf));
+	if (len <= 0) return;
+
+	// Ensure msgFSKBuffer is large enough; if not, send in chunks (here we copy up to available size)
+	size_t copylen = (size_t)len;
+	if (copylen > sizeof(msgFSKBuffer)) copylen = sizeof(msgFSKBuffer);
+	memset(msgFSKBuffer, 0, sizeof(msgFSKBuffer));
+	memcpy(msgFSKBuffer, buf, copylen);
+	// set gFSKWriteIndex so MSG_FSKSendData will send the buffer length
+	gFSKWriteIndex = (int)copylen;
+	// Trigger send using existing path
+	MSG_FSKSendData();
+}
+#endif
 
 void MSG_EnableRX(const bool enable) {
 
@@ -827,8 +854,29 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 			/*case KEY_DOWN:
 				break;*/
 			case KEY_MENU:
+				if (gAwaitPocsagAddress) {
+#ifdef ENABLE_POCSAG_SEND
+					// If waiting for address, read inputbox and send POCSAG
+					if (gInputBoxIndex > 0) {
+						uint32_t addr = (uint32_t)StrToUL(INPUTBOX_GetAscii());
+						MSG_SendPOCSAG(addr, cMessage);
+						UI_DisplayPopup("POCSAG SENT");
+					}
+#endif
+					// clear inputbox and exit address mode
+					memset(gInputBox, 10, sizeof(gInputBox));
+					gInputBoxIndex = 0;
+					gAwaitPocsagAddress = 0;
+				} else {
+					// enter pager address input mode
+					gAwaitPocsagAddress = 1;
+					memset(gInputBox, 10, sizeof(gInputBox));
+					gInputBoxIndex = 0;
+					UI_DisplayPopup("Enter pager addr\nthen press MENU");
+				}
+				break;
 			case KEY_PTT:
-				// Send message
+				// Send message (normal messenger)
 				MSG_Send(cMessage, false);
 				break;
 			case KEY_EXIT:

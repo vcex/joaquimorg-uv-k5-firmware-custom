@@ -76,8 +76,17 @@ void UI_DisplayMSG(void) {
 
 	memset(String, 0, sizeof(String));
 	sprintf(String, "%s_", cMessage);
-	//UI_PrintStringSmall(String, 3, 0, 6);
 	GUI_DisplaySmallest(String, 5, 48, false, true);
+
+	// If messenger is awaiting POCSAG address, show input box
+	extern uint8_t gAwaitPocsagAddress;
+	if (gAwaitPocsagAddress) {
+		const char *addr = INPUTBOX_GetAscii();
+		char addrStr[16];
+		memset(addrStr, 0, sizeof(addrStr));
+		snprintf(addrStr, sizeof(addrStr), "Addr:%s", addr);
+		UI_PrintStringSmallNormal(addrStr, 70, 0, 6);
+	}
 
 	// debug msg
 	/*memset(String, 0, sizeof(String));
