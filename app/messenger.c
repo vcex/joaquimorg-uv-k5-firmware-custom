@@ -535,11 +535,11 @@ void moveUP(char (*rxMessages)[MAX_RX_MSG_LENGTH + 2]) {
 	memset(rxMessages[3], 0, sizeof(rxMessages[3]));
 }
 
-void MSG_Send(const char txMessage[TX_MSG_LENGTH], bool bServiceMessage) {
+void MSG_Send(const char *txMessage, bool bServiceMessage) {
 
 	if ( msgStatus != READY ) return;
 
-	if ( strlen(txMessage) > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
+	if ( txMessage != NULL && strlen(txMessage) > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
 
 		msgStatus = SENDING;
 
@@ -553,8 +553,15 @@ void MSG_Send(const char txMessage[TX_MSG_LENGTH], bool bServiceMessage) {
 		msgFSKBuffer[0] = 'M';
 		msgFSKBuffer[1] = 'S';
 
-		// next 20 for msg
-		memcpy(msgFSKBuffer + 2, txMessage, TX_MSG_LENGTH);
+		// next TX_MSG_LENGTH for msg - copy safely without overread
+		size_t copylen = strlen(txMessage);
+		if (copylen > TX_MSG_LENGTH) copylen = TX_MSG_LENGTH;
+		if (copylen > 0) {
+			memcpy(msgFSKBuffer + 2, txMessage, copylen);
+		}
+		if (copylen < TX_MSG_LENGTH) {
+			memset(msgFSKBuffer + 2 + copylen, 0, TX_MSG_LENGTH - copylen);
+		}
 
 		// CRC ? ToDo
 
@@ -573,7 +580,7 @@ void MSG_Send(const char txMessage[TX_MSG_LENGTH], bool bServiceMessage) {
 		SYSTEM_DelayMs(100);
 
 		//BK4819_ExitTxMute();
-		
+
 		MSG_FSKSendData();
 
 		SYSTEM_DelayMs(100);
