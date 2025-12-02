@@ -5,8 +5,8 @@
 
 # ---- STOCK QUANSHENG FERATURES ----
 ENABLE_UART                   ?= 1
-ENABLE_AIRCOPY                ?= 0
-ENABLE_FMRADIO                ?= 0
+ENABLE_AIRCOPY                ?= 1
+ENABLE_FMRADIO                ?= 1
 ENABLE_NOAA                   ?= 0
 ENABLE_VOICE                  ?= 0
 ENABLE_VOX                    ?= 0
@@ -427,14 +427,16 @@ ifdef MY_PYTHON
 endif
 
 ifndef MY_PYTHON
-	$(info )
-	$(info !!!!!!!! PYTHON NOT FOUND, *.PACKED.BIN WON'T BE BUILT)
-	$(info )
-else ifneq (,$(HAS_CRCMOD))
-	$(info )
-	$(info !!!!!!!! CRCMOD NOT INSTALLED, *.PACKED.BIN WON'T BE BUILT)
-	$(info !!!!!!!! run: pip install crcmod)
-	$(info )
+$(info )
+$(info !!!!!!!! PYTHON NOT FOUND, *.PACKED.BIN WON'T BE BUILT)
+$(info )
+else
+ifneq (,$(HAS_CRCMOD))
+$(info )
+$(info !!!!!!!! CRCMOD NOT INSTALLED, *.PACKED.BIN WON'T BE BUILT)
+$(info !!!!!!!! run: pip install crcmod)
+$(info )
+endif
 endif
 
 .PHONY: all clean clean-all prog
