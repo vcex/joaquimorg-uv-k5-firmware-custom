@@ -35,6 +35,8 @@ void MSG_StorePacket(const uint16_t interrupt_bits);
 void MSG_Init();
 void MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 void MSG_Send(const char *txMessage, bool bServiceMessage);
+// POCSAG send (optional)
+void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message);
 
 #endif
 

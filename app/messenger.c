@@ -306,6 +306,24 @@ void MSG_FSKSendData() {
 
 }
 
+// New minimal wrapper to send POCSAG messages
+void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message) {
+	// Use local buffer and encode
+	uint8_t buf[1024];
+	int len = POCSAG_EncodeMessage(pagerAddress, message, buf, sizeof(buf));
+	if (len <= 0) return;
+
+	// Ensure msgFSKBuffer is large enough; if not, send in chunks (here we copy up to available size)
+	size_t copylen = (size_t)len;
+	if (copylen > sizeof(msgFSKBuffer)) copylen = sizeof(msgFSKBuffer);
+	memset(msgFSKBuffer, 0, sizeof(msgFSKBuffer));
+	memcpy(msgFSKBuffer, buf, copylen);
+	// set gFSKWriteIndex so MSG_FSKSendData will send the buffer length
+	gFSKWriteIndex = (int)copylen;
+	// Trigger send using existing path
+	MSG_FSKSendData();
+}
+
 void MSG_EnableRX(const bool enable) {
 
 	if (enable) {
