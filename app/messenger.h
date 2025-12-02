@@ -36,9 +36,11 @@ void MSG_Init();
 void MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 void MSG_Send(const char *txMessage, bool bServiceMessage);
 // POCSAG send (optional)
+#ifdef ENABLE_POCSAG_SEND
 void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message);
 // When set to 1, messenger UI will accept pager address via inputbox
 extern uint8_t gAwaitPocsagAddress;
+#endif
 
 #endif
 

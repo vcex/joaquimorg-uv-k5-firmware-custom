@@ -61,6 +61,9 @@ ENABLE_MESSENGER_UART					?= 1
 # Work in progress
 ENABLE_PMR_MODE               ?= 0
 
+# Enable optional POCSAG send encoder (0 = disabled, 1 = enabled)
+ENABLE_POCSAG_SEND           ?= 0
+
 
 #### INTERNAL USE ####
 ENABLE_SCREEN_DUMP			  ?= 0
@@ -208,6 +211,11 @@ ifeq ($(ENABLE_PMR_MODE),1)
 endif
 ifeq ($(ENABLE_MESSENGER),1)
 	C_SRC += app/messenger.c
+endif
+
+ifeq ($(ENABLE_POCSAG_SEND),1)
+	C_SRC += app/pocsag_encode.c
+	CFLAGS += -DENABLE_POCSAG_SEND
 endif
 ifeq ($(ENABLE_AIRCOPY),1)
 	C_SRC += ui/aircopy.c

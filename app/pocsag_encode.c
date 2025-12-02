@@ -47,7 +47,7 @@ static void calculateBCH3121sum (uint32_t *x)
 static void calculateEvenParity (uint32_t *x)
 {
     int count = 0;
-    for (int i = 1; i < NUM_BITS_INT; i++) if ((*x) & (1u << i)) count++;
+    for (unsigned int i = 1; i < NUM_BITS_INT; i++) if ((*x) & (1u << i)) count++;
     count = count % 2; // 0 if even
     *x |= (uint32_t)count;
 }

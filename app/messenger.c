@@ -16,7 +16,9 @@
 #include "app/messenger.h"
 #include "common.h"
 #include "ui/ui.h"
+#ifdef ENABLE_POCSAG_SEND
 #include "app/pocsag_encode.h"
+#endif
 #include "ui/inputbox.h"
 #include "ui/helper.h"
 
@@ -312,6 +314,7 @@ void MSG_FSKSendData() {
 }
 
 // New minimal wrapper to send POCSAG messages
+#ifdef ENABLE_POCSAG_SEND
 void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message) {
 	// Use local buffer and encode
 	uint8_t buf[1024];
@@ -328,6 +331,7 @@ void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message) {
 	// Trigger send using existing path
 	MSG_FSKSendData();
 }
+#endif
 
 void MSG_EnableRX(const bool enable) {
 
@@ -851,12 +855,14 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 				break;*/
 			case KEY_MENU:
 				if (gAwaitPocsagAddress) {
+#ifdef ENABLE_POCSAG_SEND
 					// If waiting for address, read inputbox and send POCSAG
 					if (gInputBoxIndex > 0) {
 						uint32_t addr = (uint32_t)StrToUL(INPUTBOX_GetAscii());
 						MSG_SendPOCSAG(addr, cMessage);
 						UI_DisplayPopup("POCSAG SENT");
 					}
+#endif
 					// clear inputbox and exit address mode
 					memset(gInputBox, 10, sizeof(gInputBox));
 					gInputBoxIndex = 0;
