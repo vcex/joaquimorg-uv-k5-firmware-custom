@@ -34,7 +34,18 @@ typedef enum MsgStatus {
 
 const uint8_t MAX_MSG_LENGTH = TX_MSG_LENGTH - 1;
 
-const uint16_t TONE2_FREQ = 0x3065; // 0x2854
+// POCSAG tone control word. Default baud can be overridden by defining
+// POCSAG_BAUD (supported: 512, 1200). Value is the BK4819 tone2 control
+// word = freq(Hz) * 10.32444 (for 13/26MHz crystal).
+#ifndef POCSAG_BAUD
+#define POCSAG_BAUD 512
+#endif
+
+#if POCSAG_BAUD == 512
+const uint16_t TONE2_FREQ = 0x14A4; // ~512 Hz control word (512 * 10.32444)
+#else
+const uint16_t TONE2_FREQ = 0x3065; // ~1200 Hz control word
+#endif
 
 #define NEXT_CHAR_DELAY 100 // 10ms tick
 
