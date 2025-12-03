@@ -820,6 +820,14 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 		}
 
 	} else if (bKeyPressed && !bKeyHeld) {
+		// Even if keyboard is locked, we should allow processing in some cases
+		// (but most keys should be blocked when locked)
+		if (gEeprom.KEY_LOCK && gKeypadLocked > 0) {
+			// Allow certain keys even when locked (none for now, this is just for future expansion)
+			// All other keys should return without processing
+			AUDIO_PlayBeep(BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL);
+			return;
+		}
 
 		switch (Key)
 		{
@@ -876,6 +884,7 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 					memset(gInputBox, 10, sizeof(gInputBox));
 					gInputBoxIndex = 0;
 					gAwaitPocsagAddress = 0;
+					gUpdateDisplay = true;
 				} else {
 					// enter pager address input mode
 					gAwaitPocsagAddress = 1;

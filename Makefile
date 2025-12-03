@@ -68,10 +68,8 @@ ENABLE_POCSAG_SEND           ?= 0
 #### INTERNAL USE ####
 ENABLE_SCREEN_DUMP			  ?= 0
 
-#------------------------------------------------------------------------------
-AUTHOR_STRING ?= JOAQUIM
-VERSION_STRING ?= V0.3.6
-PROJECT_NAME := cfw_joaquimorg_oefw_V0.3.6
+VERSION_STRING ?= V0.3.7
+PROJECT_NAME := cfw_joaquimorg_oefw_V0.3.7
 
 BUILD := _build
 BIN := firmware
