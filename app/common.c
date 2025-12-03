@@ -18,6 +18,12 @@ void COMMON_KeypadLockToggle()
 
         gEeprom.KEY_LOCK = !gEeprom.KEY_LOCK;
 
+        // If we just unlocked the keypad, clear any transient keypad lock counter
+        if (!gEeprom.KEY_LOCK) {
+            gKeypadLocked = 0;
+            gUpdateDisplay = true;
+        }
+
         gRequestSaveSettings = true;
     }
 }

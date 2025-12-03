@@ -68,8 +68,8 @@ ENABLE_POCSAG_SEND           ?= 0
 #### INTERNAL USE ####
 ENABLE_SCREEN_DUMP			  ?= 0
 
-VERSION_STRING ?= V0.3.7
-PROJECT_NAME := cfw_joaquimorg_oefw_V0.3.7
+VERSION_STRING ?= V0.3.8
+PROJECT_NAME := cfw_joaquimorg_oefw_V0.3.8
 
 BUILD := _build
 BIN := firmware
@@ -502,6 +502,13 @@ $(BUILD)/$(PROJECT_NAME).out: $(OBJECTS)
 		$(MY_PYTHON) fw-pack.py $(BIN)/$(PROJECT_NAME).bin $(AUTHOR_STRING) $(VERSION_STRING) $(BIN)/$(PROJECT_NAME).packed.bin || true; \
 	else \
 		echo "Skipping packed.bin: python not found"; \
+	fi
+
+	# Bump version for next build (non-fatal)
+	@if [ -x tools/bump_version.py ] && command -v python3 >/dev/null 2>&1; then \
+		python3 tools/bump_version.py || true; \
+	else \
+		echo "Skipping version bump: tools/bump_version.py missing or python3 not found"; \
 	fi
 
 
