@@ -504,6 +504,17 @@ $(BUILD)/$(PROJECT_NAME).out: $(OBJECTS)
 		echo "Skipping packed.bin: python not found"; \
 	fi
 
+	# Auto-release: if gh CLI present, upload artifacts (non-fatal)
+	@if command -v gh >/dev/null 2>&1; then \
+		if [ -f $(BIN)/$(PROJECT_NAME).packed.bin ]; then \
+			python3 tools/auto_release.py $(BIN)/$(PROJECT_NAME).bin $(BIN)/$(PROJECT_NAME).packed.bin || true; \
+		else \
+			python3 tools/auto_release.py $(BIN)/$(PROJECT_NAME).bin || true; \
+		fi; \
+	else \
+		echo "Skipping auto release: gh CLI not found"; \
+	fi
+
 	# Bump version for next build (non-fatal)
 	@if [ -x tools/bump_version.py ] && command -v python3 >/dev/null 2>&1; then \
 		python3 tools/bump_version.py || true; \
