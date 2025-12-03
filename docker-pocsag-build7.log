@@ -1,0 +1,122 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 443B done
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "amd64" (line 1)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/archlinux:latest
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [ 1/10] FROM docker.io/library/archlinux:latest@sha256:c136b06a4f786b84c1cc0d2494fabdf9be8811d15051cd4404deb5c3dc0b2e57
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 393.18kB 0.2s done
+#5 DONE 0.3s
+
+#6 [ 7/10] RUN pacman -Syyu python-crcmod --noconfirm
+#6 CACHED
+
+#7 [ 2/10] RUN pacman -Syyu base-devel --noconfirm
+#7 CACHED
+
+#8 [ 3/10] RUN pacman -Syyu arm-none-eabi-gcc --noconfirm
+#8 CACHED
+
+#9 [ 4/10] RUN pacman -Syyu arm-none-eabi-newlib --noconfirm
+#9 CACHED
+
+#10 [ 6/10] RUN pacman -Syyu python-pip --noconfirm
+#10 CACHED
+
+#11 [ 5/10] RUN pacman -Syyu git --noconfirm
+#11 CACHED
+
+#12 [ 8/10] WORKDIR /app
+#12 CACHED
+
+#13 [ 9/10] COPY . .
+#13 DONE 2.6s
+
+#14 [10/10] RUN git submodule update --init --recursive
+#14 DONE 0.2s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 2.8s done
+#15 writing image sha256:d1307f1461fe3b72a3da652e45d3941deff49422e32e7988655eb091dbd369c6 done
+#15 naming to docker.io/library/uvk5 done
+#15 DONE 2.8s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "amd64" (line 1)
+CC external/printf/printf.c
+CC init.c
+CC driver/adc.c
+CC driver/backlight.c
+CC driver/bk4819.c
+CC driver/eeprom.c
+CC driver/gpio.c
+CC driver/i2c.c
+CC driver/keyboard.c
+CC driver/spi.c
+CC driver/st7565.c
+CC driver/system.c
+CC driver/systick.c
+CC app/action.c
+CC app/app.c
+CC app/chFrScanner.c
+CC app/common.c
+CC app/dtmf.c
+CC app/generic.c
+CC app/main.c
+CC app/menu.c
+CC app/scanner.c
+CC audio.c
+CC bitmaps.c
+CC board.c
+CC dcs.c
+CC font.c
+CC frequencies.c
+CC functions.c
+CC helper/battery.c
+CC helper/boot.c
+CC misc.c
+CC radio.c
+CC scheduler.c
+CC settings.c
+CC ui/battery.c
+CC ui/helper.c
+CC ui/inputbox.c
+CC ui/main.c
+CC ui/menu.c
+CC ui/scanner.c
+CC ui/status.c
+CC ui/ui.c
+CC ui/welcome.c
+CC version.c
+CC main.c
+CC driver/aes.c
+CC driver/bk1080.c
+CC driver/crc.c
+CC driver/uart.c
+CC app/aircopy.c
+CC app/fm.c
+CC app/spectrum.c
+CC app/uart.c
+CC app/messenger.c
+CC ui/aircopy.c
+CC ui/fmradio.c
+CC ui/messenger.c
+AS start.S
+LD _build/cfw_joaquimorg_oefw_V0.3.6.out
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       61164 B        60 KB     99.55%
+             RAM:        3452 B        16 KB     21.07%
+Create cfw_joaquimorg_oefw_V0.3.6.out
+Create cfw_joaquimorg_oefw_V0.3.6.packed.bin

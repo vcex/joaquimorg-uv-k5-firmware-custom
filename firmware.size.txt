@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  50144	     12	   2868	  53024	   cf20	_build/cfw_joaquimorg_oefw_V0.3.6.out

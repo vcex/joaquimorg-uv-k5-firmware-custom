@@ -833,12 +833,21 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 			case KEY_7:
 			case KEY_8:
 			case KEY_9:
-				if ( keyTickCounter > NEXT_CHAR_DELAY) {
-					prevKey = 0;
-    				prevLetter = 0;
+				// If in POCSAG address input mode, append to inputbox instead of message
+#ifdef ENABLE_POCSAG_SEND
+				if (gAwaitPocsagAddress) {
+					INPUTBOX_Append(Key);
+					gUpdateDisplay = true;
+				} else
+#endif
+				{
+					if ( keyTickCounter > NEXT_CHAR_DELAY) {
+						prevKey = 0;
+	    				prevLetter = 0;
+					}
+					insertCharInMessage(Key);
+					keyTickCounter = 0;
 				}
-				insertCharInMessage(Key);
-				keyTickCounter = 0;
 				break;
 			case KEY_STAR:
 				keyboardType = (KeyboardType)((keyboardType + 1) % END_TYPE_KBRD);
@@ -876,8 +885,16 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 				}
 				break;
 			case KEY_PTT:
-				// Send message (normal messenger)
-				MSG_Send(cMessage, false);
+				// If in POCSAG address mode, ignore PTT (user should use MENU)
+#ifdef ENABLE_POCSAG_SEND
+				if (gAwaitPocsagAddress) {
+					AUDIO_PlayBeep(BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL);
+				} else
+#endif
+				{
+					// Send message (normal messenger)
+					MSG_Send(cMessage, false);
+				}
 				break;
 			case KEY_EXIT:
 				gRequestDisplayScreen = DISPLAY_MAIN;

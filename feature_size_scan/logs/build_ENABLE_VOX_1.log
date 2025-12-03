@@ -1,0 +1,24 @@
+CC external/printf/printf.c
+CC init.c
+CC driver/adc.c
+CC driver/backlight.c
+CC driver/bk4819.c
+CC driver/eeprom.c
+CC driver/gpio.c
+CC driver/i2c.c
+CC driver/keyboard.c
+CC driver/spi.c
+CC driver/st7565.c
+CC driver/system.c
+CC driver/systick.c
+CC app/action.c
+CC app/app.c
+app/app.c: In function 'APP_Update':
+app/app.c:959:33: error: too few arguments to function 'BK4819_EnableVox'
+  959 |                                 BK4819_EnableVox(gEeprom.VOX1_THRESHOLD, gEeprom.VOX0_THRESHOLD);
+      |                                 ^~~~~~~~~~~~~~~~
+In file included from app/app.c:56:
+./driver/bk4819.h:83:10: note: declared here
+   83 | void     BK4819_EnableVox(uint16_t VoxEnableThreshold, uint16_t VoxDisableThreshold, uint8_t VoxDelay);
+      |          ^~~~~~~~~~~~~~~~
+make: *** [Makefile:487: _build/app/app.o] Error 1

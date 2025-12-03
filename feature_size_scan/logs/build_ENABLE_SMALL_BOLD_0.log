@@ -1,0 +1,52 @@
+CC external/printf/printf.c
+CC init.c
+CC driver/adc.c
+CC driver/backlight.c
+CC driver/bk4819.c
+CC driver/eeprom.c
+CC driver/gpio.c
+CC driver/i2c.c
+CC driver/keyboard.c
+CC driver/spi.c
+CC driver/st7565.c
+CC driver/system.c
+CC driver/systick.c
+CC app/action.c
+CC app/app.c
+CC app/chFrScanner.c
+CC app/common.c
+CC app/dtmf.c
+CC app/generic.c
+CC app/main.c
+CC app/menu.c
+CC app/scanner.c
+CC audio.c
+CC bitmaps.c
+CC board.c
+CC dcs.c
+CC font.c
+CC frequencies.c
+CC functions.c
+CC helper/battery.c
+CC helper/boot.c
+CC misc.c
+CC radio.c
+CC scheduler.c
+CC settings.c
+CC ui/battery.c
+CC ui/helper.c
+CC ui/inputbox.c
+CC ui/main.c
+ui/main.c: In function 'UI_DisplayMain':
+ui/main.c:643:33: error: implicit declaration of function 'DrawSmallAntennaAndBars' [-Wimplicit-function-declaration]
+  643 |                                 DrawSmallAntennaAndBars(p_line1 + LCD_WIDTH, Level);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~
+ui/main.c:674:17: error: implicit declaration of function 'UI_PrintStringSmall'; did you mean 'UI_PrintStringSmallBold'? [-Wimplicit-function-declaration]
+  674 |                 UI_PrintStringSmall(s, LCD_WIDTH + 24, 0, line + 1);
+      |                 ^~~~~~~~~~~~~~~~~~~
+      |                 UI_PrintStringSmallBold
+ui/main.c:653:25: error: variable 'ModPos' set but not used [-Werror=unused-but-set-variable]
+  653 |                 uint8_t ModPos = 0;
+      |                         ^~~~~~
+cc1: all warnings being treated as errors
+make: *** [Makefile:487: _build/ui/main.o] Error 1

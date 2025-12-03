@@ -1,0 +1,2 @@
+d4130f90cb284f054f40cdd678e37c710854a20f2fd5ccf14a4425585cb74bea  firmware/cfw_joaquimorg_oefw_V0.3.6.bin
+ce46ebe5828a1b8ac3596e155f07a6a05a332e83fcc1888ac9f0d40655474f13  firmware/cfw_joaquimorg_oefw_V0.3.6.packed.bin

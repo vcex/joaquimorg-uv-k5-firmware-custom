@@ -1,0 +1,37 @@
+Release v0.3.6-pocsag-send
+
+Summary
+- Merged : adds an embedded POCSAG encoder and UI trigger to send POCSAG pager messages from the device.
+- Makefile: default  set to  to reduce FLASH usage so POCSAG fits in the image.
+- Messenger: safe string handling and  wrapper added; UI entry is gated by .
+
+Build configuration (this build)
+- Tag: v0.3.6-pocsag-send
+- Branch: main (merged)
+- Build flags used for release build:  (POCSAG encoder enabled)
+- Default AIRCOPY now disabled: 
+- LTO: enabled in Makefile ()
+
+Files uploaded
+-  (raw firmware)
+-  (packed with metadata)
+
+Checksums
+d4130f90cb284f054f40cdd678e37c710854a20f2fd5ccf14a4425585cb74bea  firmware/cfw_joaquimorg_oefw_V0.3.6.bin
+ce46ebe5828a1b8ac3596e155f07a6a05a332e83fcc1888ac9f0d40655474f13  firmware/cfw_joaquimorg_oefw_V0.3.6.packed.bin
+
+Flash / Memory usage (from the build)
+   text	   data	    bss	    dec	    hex	filename
+  50144	     12	   2868	  53024	   cf20	_build/cfw_joaquimorg_oefw_V0.3.6.out
+
+Notes / Known constraints
+- This build fits in the device FLASH with AIRCOPY disabled: FLASH reported ≈ 50,156 bytes (≈81.6% of 60KB region).
+- If you re-enable large receiver features (e.g. , , ), the image may exceed available FLASH.
+
+Flashing instructions (generic)
+1. Put your device in bootloader mode (see device docs).
+2. Use the recommended flasher from  or your usual programmer.
+3. Example: 
+4. If using the packed image, use the provided  tooling as required.
+
+If you want additional artifacts (map, symbol tables, .out), tell me and I will upload them as release assets as well.
