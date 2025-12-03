@@ -21,6 +21,8 @@ void COMMON_KeypadLockToggle()
         // If we just unlocked the keypad, clear any transient keypad lock counter
         if (!gEeprom.KEY_LOCK) {
             gKeypadLocked = 0;
+            // also clear the auto-lock countdown so it doesn't immediately re-lock
+            gKeyLockCountdown = 0;
             gUpdateDisplay = true;
         }
 
