@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
-import crcmod
 import sys
-
 from itertools import cycle
-from binascii import hexlify
+from binascii import hexlify, crc_hqx
+
+# Try to import crcmod (preferred). If missing, we'll fall back to binascii.crc_hqx
+try:
+    import crcmod
+    _HAS_CRCMOD = True
+except Exception:
+    _HAS_CRCMOD = False
 
 OBFUSCATION = [
         0x47, 0x22, 0xC0, 0x52, 0x5D, 0x57, 0x48, 0x94, 0xB1, 0x60, 0x60, 0xDB, 0x6F, 0xE3, 0x4C, 0x7C,
@@ -20,20 +25,43 @@ OBFUSCATION = [
 def obfuscate(fw):
     return bytes([a^b for a, b in zip(fw, cycle(OBFUSCATION))])
 
-plain = open(sys.argv[1], 'rb').read()
+def usage():
+    print("Usage: fw-pack.py <input.bin> <author-string> <version-string> <output.packed.bin>")
 
-version = b'*' + bytes(sys.argv[2], 'ascii') + b' ' + bytes(sys.argv[3], 'ascii')
+
+if len(sys.argv) < 5:
+    usage()
+    sys.exit(2)
+
+infile = sys.argv[1]
+author = sys.argv[2]
+version_str = sys.argv[3]
+outfile = sys.argv[4]
+
+plain = open(infile, 'rb').read()
+
+version = b'*' + bytes(author, 'ascii') + b' ' + bytes(version_str, 'ascii')
 version = version[0:16]
-
 if len(version) < 16:
     version += b'\x00' * (16 - len(version))
 
 packed = obfuscate(plain[:0x2000] + version + plain[0x2000:])
 
-crc = crcmod.predefined.Crc('xmodem')
-crc.update(packed)
-digest = crc.digest()
-digest = bytes([digest[1], digest[0]])
+# Compute XMODEM CRC (CRC-16/XMODEM). Prefer crcmod if available, otherwise use binascii.crc_hqx
+if _HAS_CRCMOD:
+    crc = crcmod.predefined.Crc('xmodem')
+    crc.update(packed)
+    digest = crc.digest()
+    # crcmod returns big-endian bytes; original script swapped bytes
+    digest = bytes([digest[1], digest[0]])
+else:
+    # binascii.crc_hqx takes (data, crc) and returns updated CRC as int
+    crc_val = crc_hqx(packed, 0)
+    # convert to two bytes little-endian swapped to match original behavior
+    digest = bytes([(crc_val >> 8) & 0xff, crc_val & 0xff])
 
-open(sys.argv[4], 'wb').write(packed + digest)
+with open(outfile, 'wb') as fh:
+    fh.write(packed + digest)
+
+print(f"Wrote {outfile} (author='{author}', version='{version_str}')")
 

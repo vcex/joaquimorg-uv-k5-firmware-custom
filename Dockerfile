@@ -8,5 +8,6 @@ RUN pacman -Syyu python-crcmod --noconfirm
 WORKDIR /app
 COPY . .
 
-RUN git submodule update --init --recursive
+# Skip submodule init inside container build (source tree already copied)
+RUN echo "Skipping git submodule init in container build"
 #RUN make && cp firmware* compiled-firmware/

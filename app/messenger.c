@@ -319,17 +319,43 @@ void MSG_SendPOCSAG(uint32_t pagerAddress, const char *message) {
 	// Use local buffer and encode
 	uint8_t buf[1024];
 	int len = POCSAG_EncodeMessage(pagerAddress, message, buf, sizeof(buf));
-	if (len <= 0) return;
+	if (len <= 0) {
+		// nothing to send
+		return;
+	}
 
-	// Ensure msgFSKBuffer is large enough; if not, send in chunks (here we copy up to available size)
+	// Ensure msgFSKBuffer is large enough; if not, send up to available size
 	size_t copylen = (size_t)len;
 	if (copylen > sizeof(msgFSKBuffer)) copylen = sizeof(msgFSKBuffer);
 	memset(msgFSKBuffer, 0, sizeof(msgFSKBuffer));
 	memcpy(msgFSKBuffer, buf, copylen);
+
+	// follow same TX sequence as MSG_Send to ensure radio state is correct
+	msgStatus = SENDING;
+
+	RADIO_SetVfoState(VFO_STATE_NORMAL);
+	BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, true);
+
 	// set gFSKWriteIndex so MSG_FSKSendData will send the buffer length
 	gFSKWriteIndex = (int)copylen;
-	// Trigger send using existing path
+
+	BK4819_DisableDTMF();
+
+	FUNCTION_Select(FUNCTION_TRANSMIT);
+	SYSTEM_DelayMs(100);
+
+	// Trigger send using existing low-level path
 	MSG_FSKSendData();
+
+	SYSTEM_DelayMs(100);
+
+	APP_EndTransmission(true);
+	RADIO_SetVfoState(VFO_STATE_NORMAL);
+
+	BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, false);
+
+	MSG_EnableRX(true);
+	msgStatus = READY;
 }
 #endif
 
@@ -820,10 +846,12 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 		}
 
 	} else if (bKeyPressed && !bKeyHeld) {
-		// Even if keyboard is locked, we should allow processing in some cases
-		// (but most keys should be blocked when locked)
+		// If keyboard is locked, allow unlocking with the function key (#)
 		if (gEeprom.KEY_LOCK && gKeypadLocked > 0) {
-			// Allow certain keys even when locked (none for now, this is just for future expansion)
+			if (Key == KEY_F) {
+				COMMON_KeypadLockToggle();
+				return;
+			}
 			// All other keys should return without processing
 			AUDIO_PlayBeep(BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL);
 			return;
@@ -878,6 +906,7 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 						uint32_t addr = (uint32_t)StrToUL(INPUTBOX_GetAscii());
 						MSG_SendPOCSAG(addr, cMessage);
 						UI_DisplayPopup("POCSAG SENT");
+						gUpdateDisplay = true;
 					}
 #endif
 					// clear inputbox and exit address mode
@@ -891,6 +920,7 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 					memset(gInputBox, 10, sizeof(gInputBox));
 					gInputBoxIndex = 0;
 					UI_DisplayPopup("Enter pager addr\nthen press MENU");
+					gUpdateDisplay = true;
 				}
 				break;
 			case KEY_PTT:

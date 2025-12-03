@@ -434,9 +434,7 @@ else ifneq (, $(shell $(WHERE) python3))
 	MY_PYTHON := python3
 endif
 
-ifdef MY_PYTHON
-	HAS_CRCMOD := $(shell $(MY_PYTHON) -c "import crcmod" 2>&1)
-endif
+HAS_CRCMOD := $(shell if [ -n "$(MY_PYTHON)" ]; then $(MY_PYTHON) -c "import crcmod" 2>&1; fi)
 
 ifndef MY_PYTHON
 $(info )
@@ -500,7 +498,11 @@ $(BUILD)/$(PROJECT_NAME).out: $(OBJECTS)
 	@echo Create $(notdir $@)
 	@$(OBJCOPY) -O binary $(BUILD)/$(PROJECT_NAME).out $(BIN)/$(PROJECT_NAME).bin
 	@echo Create $(PROJECT_NAME).packed.bin
-	@-$(MY_PYTHON) fw-pack.py $(BIN)/$(PROJECT_NAME).bin $(AUTHOR_STRING) $(VERSION_STRING) $(BIN)/$(PROJECT_NAME).packed.bin
+	@if [ -n "$(MY_PYTHON)" ] && command -v $(MY_PYTHON) >/dev/null 2>&1; then \
+		$(MY_PYTHON) fw-pack.py $(BIN)/$(PROJECT_NAME).bin $(AUTHOR_STRING) $(VERSION_STRING) $(BIN)/$(PROJECT_NAME).packed.bin || true; \
+	else \
+		echo "Skipping packed.bin: python not found"; \
+	fi
 
 
 prog: all
