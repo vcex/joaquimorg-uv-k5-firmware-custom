@@ -6,7 +6,7 @@ RUN pacman -Syyu git --noconfirm
 RUN pacman -Syyu python python-pip --noconfirm
 RUN pacman -Syyu python-crcmod --noconfirm
 # Install GitHub CLI so container builds can auto-upload releases when credentials are provided
-RUN pacman -Syyu gh --noconfirm || true
+RUN pacman -Syyu github-cli --noconfirm || true
 WORKDIR /app
 COPY . .
 
